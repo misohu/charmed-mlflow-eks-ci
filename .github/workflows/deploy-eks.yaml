@@ -57,9 +57,9 @@ jobs:
       - name: Deploy mlflow bundle
         run: |
           juju deploy ./bundle.yaml --trust
-          # sleeping for 15 minutes to wait for charms
-          sleep 900
-          jujus status --relations
+          # sleeping for 25 minutes to wait for charms
+          sleep 1500
+          juju status --relations
       
       - name: Check MLflow running
         run: |
