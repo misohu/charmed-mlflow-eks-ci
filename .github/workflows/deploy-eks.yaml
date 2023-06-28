@@ -45,7 +45,7 @@ jobs:
       
       - name: Create cluster
         run: |
-          eksctl create cluster -f cluster.yaml
+          eksctl create cluster -f .github/workflows/cluster.yaml
           kubectl get nodes
       
       - name: Setup juju
@@ -56,7 +56,7 @@ jobs:
       
       - name: Deploy mlflow bundle
         run: |
-          juju deploy ./bundle.yaml --trust
+          juju deploy ./releases/latest/edge/mlflow/bundle.yaml --trust
           # sleeping for 25 minutes to wait for charms
           sleep 1500
           juju status --relations
