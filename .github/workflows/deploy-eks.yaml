@@ -22,6 +22,7 @@ jobs:
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region eu-central-1
       
       - name: Install kubectl
         run: |
@@ -57,12 +58,20 @@ jobs:
         run: |
           juju deploy ./bundle.yaml --trust
       
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 60
+      - name: Check MLflow running
+        run: |
+          kubectl -n kubeflow port-forward pod/mlflow-server-0 5000:5000 &
+          kubectl -n kubeflow port-forward pod/mlflow-server-0 8000:8000 &
+          curl -I --fail localhost:5000
+          curl -I --fail localhost:8000
       
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 60
         if: failure()
+      
+      - name: Remove eks 
+        if: always()
+        run: |
+          eksctl delete cluster --name=kubeflow-test 
 
