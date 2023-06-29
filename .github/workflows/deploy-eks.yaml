@@ -45,7 +45,7 @@ jobs:
       
       - name: Create cluster
         run: |
-          eksctl create cluster -f .github/workflows/cluster.yaml
+          eksctl create cluster -f .github/cluster.yaml
           kubectl get nodes
       
       - name: Setup juju
