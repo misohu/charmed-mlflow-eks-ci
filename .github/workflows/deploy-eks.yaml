@@ -57,8 +57,7 @@ jobs:
       - name: Deploy mlflow bundle
         run: |
           juju deploy ./releases/latest/edge/mlflow/bundle.yaml --trust
-          # sleeping for 25 minutes to wait for charms
-          sleep 1500
+          juju wait-for application mlflow-server --query='name=="mlflow-server" && (status=="active" || status=="idle")' --timeout=30m0s
           juju status --relations
       
       - name: Check MLflow running
