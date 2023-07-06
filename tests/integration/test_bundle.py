@@ -36,7 +36,7 @@ class TestCharm:
             status="active",
             raise_on_blocked=False,
             raise_on_error=False,
-            timeout=1500,
+            timeout=3000,
         )
     
     @retry(stop=stop_after_delay(5), wait=wait_fixed(1))

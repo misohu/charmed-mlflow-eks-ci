@@ -72,5 +72,4 @@ jobs:
       - name: Remove eks 
         if: always()
         run: |
-          eksctl delete cluster --name=kubeflow-test 
-
+          eksctl delete cluster --name=mlflow-bundle-test
