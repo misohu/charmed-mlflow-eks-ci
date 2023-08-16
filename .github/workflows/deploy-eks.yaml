@@ -3,9 +3,9 @@ name: Configure EKS and run MLflow bundle test
 on:
   workflow_dispatch: # This event allows manual triggering from the GitHub UI
     secrets:
-      AWS_ACCESS_KEY_ID:
+      BUNDLE_KUBEFLOW_EKS_AWS_ACCESS_KEY_ID:
         required: true
-      AWS_SECRET_ACCESS_KEY:
+      BUNDLE_KUBEFLOW_EKS_AWS_SECRET_ACCESS_KEY:
         required: true
 jobs:
   deploy-ckf-to-eks:
@@ -22,8 +22,8 @@ jobs:
       
       - name: Configure AWS Credentials
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.BUNDLE_KUBEFLOW_EKS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.BUNDLE_KUBEFLOW_EKS_AWS_SECRET_ACCESS_KEY }}
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
