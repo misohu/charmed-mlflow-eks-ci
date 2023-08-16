@@ -48,4 +48,4 @@ jobs:
           pip install tenacity
 
       - name: Run delete volumes script
-        run: python scripts/delete_volumes.py ${{ inputs.region }}
+        run: python .github/scripts/delete_volumes.py ${{ inputs.region }}

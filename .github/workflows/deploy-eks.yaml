@@ -96,3 +96,5 @@ jobs:
     secrets: inherit
     with:
       region: eu-central-1
+    needs: [deploy-ckf-to-eks]
+
