@@ -88,5 +88,5 @@ jobs:
     uses: ./.github/workflows/delete-aws-volumes.yaml
     secrets: inherit
     with:
-      region: ${{ env.REGION }} # Use the REGION environment variable
+      region: $REGION # Use the REGION environment variable
     needs: [deploy-mlflow-to-eks]
