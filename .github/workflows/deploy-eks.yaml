@@ -1,33 +1,30 @@
-name: Configure EKS and run MLflow bundle test
-
+name: Create EKS cluster, deploy MLflow and run bundle test
 on:
-  workflow_dispatch: # This event allows manual triggering from the GitHub UI
+  workflow_dispatch: # This event allows manual triggering from the Github UI
     secrets:
       BUNDLE_KUBEFLOW_EKS_AWS_ACCESS_KEY_ID:
         required: true
       BUNDLE_KUBEFLOW_EKS_AWS_SECRET_ACCESS_KEY:
         required: true
+env:
+  REGION: eu-central-1 # Set the REGION environment variable
+
 jobs:
-  deploy-ckf-to-eks:
+  deploy-mlflow-to-eks:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      # ... (your existing steps)
 
-      - name: Install tox
-        run: |
-          python -m pip install --upgrade pip
-          pip install tox
-      
       - name: Configure AWS Credentials
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.BUNDLE_KUBEFLOW_EKS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.BUNDLE_KUBEFLOW_EKS_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ env.REGION }} # Use the REGION environment variable
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-          aws configure set default.region eu-central-1
+          aws configure set default.region $AWS_DEFAULT_REGION
       
       - name: Install kubectl
         run: |
@@ -64,16 +61,6 @@ jobs:
         run: |
           tox -vve bundle-test -- --model kubeflow --keep-models -vv -s
       
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 60
-        if: failure()
-      
-      - name: Remove eks 
-        if: always()
-        run: |
-          eksctl delete cluster --name=mlflow-bundle-test
-      
       # On failure, capture debugging resources
       - name: Get all kubernetes resources
         run: kubectl get all -A
@@ -90,11 +77,16 @@ jobs:
       - name: Get operator logs
         run: kubectl logs --tail 100 -ntesting -loperator.juju.is/name=mlflow-server
         if: failure()
+
+      - name: Remove eks 
+        if: always()
+        run: |
+          eksctl delete cluster --name=mlflow-bundle-test
+
   delete-unattached-volumes:
     if: always()
     uses: ./.github/workflows/delete-aws-volumes.yaml
     secrets: inherit
     with:
-      region: eu-central-1
-    needs: [deploy-ckf-to-eks]
-
+      region: ${{ env.REGION }} # Use the REGION environment variable
+    needs: [deploy-mlflow-to-eks]
