@@ -7,24 +7,28 @@ on:
       BUNDLE_KUBEFLOW_EKS_AWS_SECRET_ACCESS_KEY:
         required: true
 env:
-  REGION: eu-central-1 # Set the REGION environment variable
-
+  REGION: eu-central-1
 jobs:
   deploy-mlflow-to-eks:
     runs-on: ubuntu-22.04
 
     steps:
-      # ... (your existing steps)
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
+      - name: Install tox
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox
+      
       - name: Configure AWS Credentials
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.BUNDLE_KUBEFLOW_EKS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.BUNDLE_KUBEFLOW_EKS_AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ env.REGION }} # Use the REGION environment variable
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-          aws configure set default.region $AWS_DEFAULT_REGION
+          aws configure set default.region eu-central-1
       
       - name: Install kubectl
         run: |
@@ -88,5 +92,5 @@ jobs:
     uses: ./.github/workflows/delete-aws-volumes.yaml
     secrets: inherit
     with:
-      region: $REGION # Use the REGION environment variable
+      region: ${{ env.REGION }}
     needs: [deploy-mlflow-to-eks]
