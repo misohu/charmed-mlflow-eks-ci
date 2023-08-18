@@ -8,7 +8,7 @@ on:
         required: true
     inputs:
       region:
-        description: 'Insert the AWS Region name in which the script will delete unattached volumes. Running it with an empty region means that it will delete unattached volumes in the ALL available regions.'
+        description: 'Insert the AWS Region name in which the script will deploy the EKS cluster.'
         required: false
         default: 'eu-central-1'
         type: string
